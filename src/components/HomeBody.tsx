@@ -1,3 +1,10 @@
+import { CardList } from "./CardList.tsx";
+
+// Componente principale
 export function HomeBody() {
-  return <div className="flex w-full bg-purple-200 h-full">Body</div>;
+  return (
+    <div className="mx-auto px-4">
+      <CardList />
+    </div>
+  );
 }
