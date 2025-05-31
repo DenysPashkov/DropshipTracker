@@ -5,7 +5,13 @@ export function Card({ cardProp }: { cardProp: CardProps }) {
     date.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit", year: "2-digit" });
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg overflow-hidden border p-4 w-full h-full">
+    <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden border p-4 w-full h-full">
+      {cardProp.vendita && (
+        <div className="absolute top-3 right-[-45px] transform rotate-40 bg-green-500 text-white text-xs font-bold px-12 py-1 shadow-md">
+          Venduto
+        </div>
+      )}
+
       <div className="space-y-4">
         <h2 className="text-xl font-semibold text-gray-800">{cardProp.name}</h2>
 
@@ -38,5 +44,6 @@ export function Card({ cardProp }: { cardProp: CardProps }) {
     </div>
   );
 }
+
 
 

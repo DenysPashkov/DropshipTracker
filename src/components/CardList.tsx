@@ -18,7 +18,13 @@ export function CardList() {
     setShowVendita(!!item.vendita); // attiva checkbox se esiste già
   };
 
+  const handleDelete = () => {
+    console.log("Dati cencellati:", selectedCard);
+    setSelectedCard(null);
+  };
+
   const handleClose = () => {
+    console.log("Chiusa modale", selectedCard);
     setSelectedCard(null);
   };
 
@@ -61,7 +67,7 @@ export function CardList() {
       </div>
 
       {selectedCard && (
-        <Modal onClose={handleClose} onSave={handleSave}>
+        <Modal onClose={handleClose} onDelete={handleDelete} onSave={handleSave}>
           <form className="flex flex-col gap-4">
             <div>
               <label className="flex items-center gap-4 font-semibold">Nome</label>
