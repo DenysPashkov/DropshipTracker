@@ -1,6 +1,6 @@
 type ModalProps = {
   onClose: () => void;
-  onDelete: () => void;
+  onDelete?: () => void;
   onSave?: () => void; // opzionale
   children?: React.ReactNode; // contenuto generico dentro la modale
   saveLabel?: string; // testo bottone salva personalizzabile
@@ -26,13 +26,14 @@ export function Modal({
         <div className="mt-4 text-right">{children}</div>
 
         <div className="mt-6 flex justify-center gap-6">
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-            onClick={onDelete}
-            aria-label="Chiudi modale"
-          >
-            Elimina
-          </button>
+          {onDelete && (
+            <button
+              className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
+              onClick={onDelete}
+            >
+              Elimina
+            </button>
+          )}
 
           {onSave && (
             <button
