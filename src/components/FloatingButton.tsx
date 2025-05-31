@@ -1,7 +1,12 @@
-export function FloatingButton() {
+export function FloatingButton({ onClick }: { onClick?: () => void }) {
   return (
-    <div className="fixed bottom-4 right-4 w-20 h-20 bg-yellow-300 flex items-center justify-center rounded-full shadow-md z-20">
-      Plus
-    </div>
+    <button
+      onClick={onClick}
+      className="fixed bottom-4 right-4 w-16 h-16 bg-blue-600 text-white text-xl font-bold rounded-full shadow-md flex items-center justify-center hover:bg-blue-700 focus:outline-none z-20 transition-colors"
+      aria-label="Aggiungi"
+    >
+      +
+    </button>
   );
 }
+
