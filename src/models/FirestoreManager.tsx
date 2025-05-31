@@ -20,7 +20,7 @@ export class firebaseManager {
       return;
     }
 
-    const docRef = doc(db, "LocationsStoring", "4IZszzf7m4xFrLQrGEcr");
+    const docRef = doc(db, "DropshipTracker", "7uvKnCSAq58tnRWjc9BN");
     getDoc(docRef)
       .then((docSnap) => {
         const data = docSnap.data();
@@ -45,7 +45,7 @@ export class firebaseManager {
       return;
     }
 
-    const docRef = doc(db, "LocationsStoring", "4IZszzf7m4xFrLQrGEcr");
+    const docRef = doc(db, "DropshipTracker", "7uvKnCSAq58tnRWjc9BN");
 
     updateDoc(docRef, {
       CardProps: arrayUnion(newCardProp.toJSON()),
