@@ -2,7 +2,6 @@ import type { CardProps } from "../models/transazione";
 
 export function Card({ cardProp }: { cardProp: CardProps }) {
   const formatDate = (date: Date) => {
-    console.log(cardProp);
     return date.toLocaleDateString("it-IT", {
       day: "2-digit",
       month: "2-digit",

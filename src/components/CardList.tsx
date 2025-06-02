@@ -18,7 +18,6 @@ export function CardList() {
       return;
     }
     firestoreManager.fetchCardProps(db, (cardProps) => {
-      console.log("Data fetched ", cardProps);
       setCard(cardProps);
     });
   }, [db]);
@@ -36,8 +35,6 @@ export function CardList() {
     if (!db || !selectedCard) {
       return;
     }
-
-    console.log("Dati salvati:", selectedCard);
 
     // Save to Firestore
     firestoreManager.updateCardProp(db, selectedCard, (updatedCards) => {

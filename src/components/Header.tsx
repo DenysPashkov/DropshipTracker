@@ -116,7 +116,6 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
     }
 
     updateSettings(formData);
-    console.log("Saved config:", formData);
     onClose();
   };
 
