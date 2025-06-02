@@ -122,30 +122,6 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
     onClose();
   };
 
-  const getDB = () => {
-    if (!db) {
-      return;
-    }
-    firebaseManager.fetchCardProps(db, (cards) => {
-      console.log("Cards retrived : ", cards);
-    });
-  };
-
-  const addToDb = () => {
-    if (!db) {
-      return;
-    }
-    const tempCardProp = new CardProps(
-      123,
-      "test card prop",
-      new Transazione(123, new Date()),
-      null
-    );
-    firebaseManager.addCardProp(db, tempCardProp, (card) => {
-      console.log("Card setting: ", card);
-    });
-  };
-
   return (
     <div
       onClick={onClose}
@@ -183,9 +159,6 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
           >
             Save
           </button>
-
-          <button onClick={getDB}>Fetch</button>
-          <button onClick={addToDb}>Set</button>
         </div>
       </div>
     </div>
