@@ -4,8 +4,6 @@ import {
   useFirestore,
   type FirestoreSettings,
 } from "../models/firestoreSettings";
-import { firebaseManager } from "../models/FirestoreManager";
-import { CardProps, Transazione } from "../models/transazione";
 
 export function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -101,7 +99,7 @@ function SettingHeaderSection({ onClick }: { onClick: () => void }) {
 }
 
 function SettingsModal({ onClose }: { onClose: () => void }) {
-  const { settings, updateSettings, db } = useFirestore();
+  const { settings, updateSettings } = useFirestore();
   const [formData, setFormData] = useState<FirestoreSettings>(settings);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -125,7 +123,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
   return (
     <div
       onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur"
     >
       <div
         onClick={(e) => e.stopPropagation()}
