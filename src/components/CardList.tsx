@@ -1,55 +1,75 @@
 import { useEffect, useState } from "react";
 import { Card } from "./Card";
-import { data } from "./placeholderData";
 import { Modal } from "./Modal";
-import type { CardProps } from "../models/transazione";
+import { CardProps, Transazione } from "../models/transazione";
+import { FloatingButton } from "./FloatingButton";
+import { useFirestore } from "../models/firestoreSettings";
+import { firestoreManager } from "../models/FirestoreManager";
 
 export function CardList() {
   const [getCard, setCard] = useState<CardProps[]>([]);
   const [selectedCard, setSelectedCard] = useState<CardProps | null>(null);
   const [showVendita, setShowVendita] = useState<boolean>(false);
+  const { db } = useFirestore();
 
   useEffect(() => {
-    setCard(data);
-  }, []);
+    if (!db) {
+      console.error("No db for fetch the data");
+      return;
+    }
+    firestoreManager.fetchCardProps(db, (cardProps) => {
+      console.log("Data fetched ", cardProps);
+      setCard(cardProps);
+    });
+  }, [db]);
 
   const handleCardClick = (item: CardProps) => {
-    setSelectedCard({ ...item }); // copia profonda per evitare mutazioni dirette
+    setSelectedCard(item.clone()); // copia profonda per evitare mutazioni dirette
     setShowVendita(!!item.vendita); // attiva checkbox se esiste già
   };
 
-  const handleDelete = () => {
-    console.log("Dati cencellati:", selectedCard);
-    setSelectedCard(null);
-  };
-
   const handleClose = () => {
-    console.log("Chiusa modale", selectedCard);
     setSelectedCard(null);
   };
 
   const handleSave = () => {
+    if (!db || !selectedCard) {
+      return;
+    }
+
     console.log("Dati salvati:", selectedCard);
+
+    // Save to Firestore
+    firestoreManager.updateCardProp(db, selectedCard, (updatedCards) => {
+      // Replace the updated card in the local state
+      setCard(updatedCards);
+    });
+
     setSelectedCard(null);
   };
 
   const handleChange = (
-    path: ["acquisto" | "vendita" | null, string],
+    path: ["acquisto" | "vendita" | null, keyof Transazione | keyof CardProps],
     value: any
   ) => {
     if (!selectedCard) return;
 
+    const updated = selectedCard.clone(); // create a deep copy
+
     if (path[0] === null) {
-      setSelectedCard({ ...selectedCard, [path[1]]: value });
+      (updated as any)[path[1]] = value;
     } else {
-      setSelectedCard({
-        ...selectedCard,
-        [path[0]]: {
-          ...(selectedCard[path[0]] ?? {}),
-          [path[1]]: value,
-        },
-      });
+      if (updated[path[0]]) {
+        (updated[path[0]] as any)[path[1]] = value;
+      } else {
+        updated[path[0]] = new Transazione(
+          path[1] === "prezzo" ? value : 0,
+          path[1] === "data" ? value : new Date()
+        );
+      }
     }
+
+    setSelectedCard(updated);
   };
 
   return (
@@ -67,10 +87,12 @@ export function CardList() {
       </div>
 
       {selectedCard && (
-        <Modal onClose={handleClose} onDelete={handleDelete} onSave={handleSave}>
+        <Modal onClose={handleClose} onSave={handleSave}>
           <form className="flex flex-col gap-4">
             <div>
-              <label className="flex items-center gap-4 font-semibold">Nome</label>
+              <label className="flex items-center gap-4 font-semibold">
+                Nome
+              </label>
               <input
                 type="text"
                 placeholder="Inserisci il nome"
@@ -99,12 +121,14 @@ export function CardList() {
             </div>
 
             <div>
-              <label className="flex items-center gap-4 font-semibold">Data acquisto</label>
+              <label className="flex items-center gap-4 font-semibold">
+                Data acquisto
+              </label>
               <input
                 type="date"
-                value={selectedCard.acquisto.date.toISOString().split("T")[0]}
+                value={selectedCard.acquisto.data.toISOString().split("T")[0]}
                 onChange={(e) =>
-                  handleChange(["acquisto", "date"], new Date(e.target.value))
+                  handleChange(["acquisto", "data"], new Date(e.target.value))
                 }
                 className="border p-2 rounded w-full"
               />
@@ -146,15 +170,15 @@ export function CardList() {
                   <input
                     type="date"
                     value={
-                      selectedCard.vendita?.date
-                        ? new Date(selectedCard.vendita.date)
+                      selectedCard.vendita?.data
+                        ? new Date(selectedCard.vendita.data)
                             .toISOString()
                             .split("T")[0]
                         : ""
                     }
                     onChange={(e) =>
                       handleChange(
-                        ["vendita", "date"],
+                        ["vendita", "data"],
                         new Date(e.target.value)
                       )
                     }
@@ -166,6 +190,8 @@ export function CardList() {
           </form>
         </Modal>
       )}
+
+      <FloatingButton setCard={setCard} />
     </>
   );
 }

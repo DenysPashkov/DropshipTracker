@@ -48,6 +48,44 @@ export class firestoreManager {
       });
   }
 
+  static async updateCardProp(
+    db: Firestore,
+    updatedCard: CardProps,
+    setCardProps: (cards: CardProps[]) => void
+  ) {
+    if (!db) {
+      console.error("Firestore is not initialized.");
+      return;
+    }
+
+    const docRef = doc(db, "DropshipTracker", "7uvKnCSAq58tnRWjc9BN");
+
+    try {
+      const docSnap = await getDoc(docRef);
+      const data = docSnap.data();
+
+      if (!data || !Array.isArray(data.CardProps)) {
+        console.error("No CardProps array found in Firestore.");
+        return;
+      }
+
+      // Rebuild array with updated card
+      const updatedArray = data.CardProps.map((card: any) => {
+        return card.id === updatedCard.id ? updatedCard.toJSON() : card;
+      });
+
+      await updateDoc(docRef, { CardProps: updatedArray });
+
+      // Update local state
+      const parsedCards = updatedArray.map((card: any) =>
+        CardProps.fromJSON(card)
+      );
+      setCardProps(parsedCards);
+    } catch (error) {
+      console.error("Error updating CardProp:", error);
+    }
+  }
+
   /**
    * Adds a new CardProp to the Firestore document and updates the local state.
    *

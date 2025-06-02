@@ -1,8 +1,14 @@
 import type { CardProps } from "../models/transazione";
 
 export function Card({ cardProp }: { cardProp: CardProps }) {
-  const formatDate = (date: Date) =>
-    date.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit", year: "2-digit" });
+  const formatDate = (date: Date) => {
+    console.log(cardProp);
+    return date.toLocaleDateString("it-IT", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "2-digit",
+    });
+  };
 
   return (
     <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden border p-4 w-full h-full">
@@ -26,17 +32,25 @@ export function Card({ cardProp }: { cardProp: CardProps }) {
             <div className="font-medium">Prezzo</div>
             <div className="text-center">{cardProp.acquisto.prezzo}</div>
             <div className="text-center">
-              {cardProp.vendita ? cardProp.vendita.prezzo : <span className="text-red-400">–</span>}
+              {cardProp.vendita ? (
+                cardProp.vendita.prezzo
+              ) : (
+                <span className="text-red-400">–</span>
+              )}
             </div>
           </div>
 
           <div className="grid grid-cols-3 text-gray-600 py-1">
             <div className="font-medium">Data</div>
             <div className="text-center">
-              {formatDate(cardProp.acquisto.date)}
+              {formatDate(cardProp.acquisto.data)}
             </div>
             <div className="text-center">
-              {cardProp.vendita ? formatDate(cardProp.vendita.date) : <span className="text-red-400">–</span>}
+              {cardProp.vendita ? (
+                formatDate(cardProp.vendita.data)
+              ) : (
+                <span className="text-red-400">–</span>
+              )}
             </div>
           </div>
         </div>
@@ -44,6 +58,3 @@ export function Card({ cardProp }: { cardProp: CardProps }) {
     </div>
   );
 }
-
-
-

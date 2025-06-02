@@ -1,16 +1,44 @@
 import { useState } from "react";
 import { Modal } from "./Modal";
-import type { transazione } from "../models/transazione";
+import { CardProps, Transazione } from "../models/transazione";
+import { useFirestore } from "../models/firestoreSettings";
+import { firestoreManager } from "../models/FirestoreManager";
 
-export function FloatingButton() {
+export function FloatingButton({
+  setCard,
+}: {
+  setCard: React.Dispatch<React.SetStateAction<CardProps[]>>;
+}) {
   const [isOpen, setIsOpen] = useState(false);
 
   const openModal = () => setIsOpen(true);
-  const closeModal = () => {
-    setIsOpen(false);
-  };
+  const closeModal = () => setIsOpen(false);
 
-  const handleSave = () => {
+  const { db } = useFirestore();
+
+  const handleSave = (cardPropData: Partial<CardProps>) => {
+    if (!db) {
+      return;
+    }
+    if (
+      !cardPropData.name?.trim() &&
+      (!cardPropData.acquisto || cardPropData.acquisto.prezzo === 0)
+    ) {
+      return;
+    }
+
+    const newId = Math.floor(Math.random() * 10_000_000) + 1;
+
+    // Safely build a real CardProps instance
+    const constructedCard = CardProps.fromJSON({
+      ...cardPropData,
+      id: newId, // inject new ID directly
+    });
+
+    firestoreManager.addCardProp(db, constructedCard, (cardProp) => {
+      setCard((prev) => [...prev, cardProp]);
+    });
+
     closeModal();
   };
 
@@ -30,20 +58,12 @@ export function FloatingButton() {
           closeModal={() => {
             closeModal();
           }}
-          handleSave={() => {
-            handleSave();
-          }}
+          handleSave={handleSave}
         />
       )}
     </>
   );
 }
-
-type formData = {
-  name: string;
-  acquisto: transazione;
-  vendita: transazione | null;
-};
 
 function FloatingButtonModal({
   closeModal,
@@ -51,17 +71,18 @@ function FloatingButtonModal({
 }: {
   isOpen: boolean;
   closeModal: () => void;
-  handleSave: () => void;
+  handleSave: (cardProp: CardProps) => void;
 }) {
   const [showVendita, setShowVendita] = useState(false);
 
-  const formDataDefault: formData = {
-    name: "",
-    acquisto: { prezzo: 0, date: new Date() },
-    vendita: null,
-  };
+  const cardPropsDefault: CardProps = new CardProps(
+    0,
+    "",
+    new Transazione(0, new Date()),
+    null
+  );
 
-  const [formData, setFormData] = useState<formData>(formDataDefault);
+  const [cardProp, setCardProp] = useState<CardProps>(cardPropsDefault);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
@@ -79,7 +100,7 @@ function FloatingButtonModal({
       return; // non fare nulla
     }
 
-    setFormData((prev) => {
+    setCardProp((prev) => {
       const copy = structuredClone(prev);
 
       if (keys.length === 1) {
@@ -94,7 +115,13 @@ function FloatingButtonModal({
 
   return (
     <>
-      <Modal onClose={closeModal} onSave={handleSave} saveLabel="Aggiungi">
+      <Modal
+        onClose={closeModal}
+        onSave={() => {
+          handleSave(cardProp);
+        }}
+        saveLabel="Aggiungi"
+      >
         <form className="flex flex-col gap-4">
           <div>
             <label className="flex items-center gap-4 font-semibold">
@@ -104,7 +131,7 @@ function FloatingButtonModal({
               name="name"
               type="text"
               placeholder="Inserisci il nome"
-              value={formData.name}
+              value={cardProp.name}
               onChange={handleChange}
               className="border p-2 rounded w-full"
             />
@@ -118,7 +145,7 @@ function FloatingButtonModal({
               name="acquisto.prezzo"
               type="number"
               placeholder="Es. 100"
-              value={formData.acquisto.prezzo}
+              value={cardProp.acquisto.prezzo}
               onChange={handleChange}
               className="border p-2 rounded w-full"
             />
@@ -131,7 +158,7 @@ function FloatingButtonModal({
             <input
               name="acquisto.date"
               type="date"
-              value={formData.acquisto.date.toISOString().split("T")[0]}
+              value={cardProp.acquisto.data.toISOString().split("T")[0]}
               onChange={handleChange}
               className="border p-2 rounded w-full"
             />
@@ -144,19 +171,20 @@ function FloatingButtonModal({
               onChange={(e) => {
                 setShowVendita(e.target.checked);
                 if (!e.target.checked) {
-                  setFormData((prev) => ({ ...prev, vendita: null }));
+                  const newCardProp = cardProp.clone();
+                  newCardProp.vendita = null;
+                  setCardProp(newCardProp);
                 } else {
-                  setFormData((prev) => ({
-                    ...prev,
-                    vendita: { prezzo: 0, date: new Date() },
-                  }));
+                  const newCardProp = cardProp.clone();
+                  newCardProp.vendita = new Transazione(0, new Date());
+                  setCardProp(newCardProp);
                 }
               }}
             />
             <label className="font-semibold">Aggiungi dati vendita</label>
           </div>
 
-          {showVendita && formData.vendita && (
+          {showVendita && cardProp.vendita && (
             <>
               <div>
                 <label className="flex items-center gap-4 font-semibold">
@@ -165,7 +193,7 @@ function FloatingButtonModal({
                 <input
                   name="vendita.prezzo"
                   type="number"
-                  value={formData.vendita?.prezzo ?? ""}
+                  value={cardProp.vendita?.prezzo ?? ""}
                   onChange={handleChange}
                   className="border p-2 rounded w-full"
                 />
@@ -179,8 +207,8 @@ function FloatingButtonModal({
                   name="vendita.date"
                   type="date"
                   value={
-                    formData.vendita?.date
-                      ? formData.vendita.date.toISOString().split("T")[0]
+                    cardProp.vendita?.data
+                      ? cardProp.vendita.data.toISOString().split("T")[0]
                       : ""
                   }
                   onChange={handleChange}
