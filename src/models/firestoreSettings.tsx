@@ -1,15 +1,15 @@
 // FirestoreContext.tsx
-import { initializeApp, type FirebaseApp } from "firebase/app";
+import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { Firestore, getFirestore } from "firebase/firestore";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 export type FirestoreSettings = {
-  apiKey: "";
-  authDomain: "";
-  projectId: "";
-  storageBucket: "";
-  messagingSenderId: "";
-  appId: "";
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+  storageBucket: string;
+  messagingSenderId: string;
+  appId: string;
 };
 
 const defaultSettings: FirestoreSettings = {
@@ -56,7 +56,24 @@ export const FirestoreProvider = ({
   };
 
   useEffect(() => {
-    const app = initializeApp(settings);
+    const hasValidSettings = Object.values(settings).every((val) => val !== "");
+    if (!hasValidSettings) return;
+
+    let app;
+
+    if (!getApps().length) {
+      // No Firebase app initialized yet
+      app = initializeApp(settings);
+    } else {
+      try {
+        // Reuse the existing default app
+        app = getApp();
+      } catch (error) {
+        console.error("Failed to get Firebase app:", error);
+        return;
+      }
+    }
+
     const db = getFirestore(app);
     setDB(db);
   }, [settings]);

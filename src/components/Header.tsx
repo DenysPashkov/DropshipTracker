@@ -4,6 +4,8 @@ import {
   useFirestore,
   type FirestoreSettings,
 } from "../models/firestoreSettings";
+import { firebaseManager } from "../models/FirestoreManager";
+import { CardProps, Transazione } from "../models/transazione";
 
 export function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -99,7 +101,7 @@ function SettingHeaderSection({ onClick }: { onClick: () => void }) {
 }
 
 function SettingsModal({ onClose }: { onClose: () => void }) {
-  const { settings, updateSettings } = useFirestore();
+  const { settings, updateSettings, db } = useFirestore();
   const [formData, setFormData] = useState<FirestoreSettings>(settings);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -118,6 +120,30 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
     updateSettings(formData);
     console.log("Saved config:", formData);
     onClose();
+  };
+
+  const getDB = () => {
+    if (!db) {
+      return;
+    }
+    firebaseManager.fetchCardProps(db, (cards) => {
+      console.log("Cards retrived : ", cards);
+    });
+  };
+
+  const addToDb = () => {
+    if (!db) {
+      return;
+    }
+    const tempCardProp = new CardProps(
+      123,
+      "test card prop",
+      new Transazione(123, new Date()),
+      null
+    );
+    firebaseManager.addCardProp(db, tempCardProp, (card) => {
+      console.log("Card setting: ", card);
+    });
   };
 
   return (
@@ -157,6 +183,9 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
           >
             Save
           </button>
+
+          <button onClick={getDB}>Fetch</button>
+          <button onClick={addToDb}>Set</button>
         </div>
       </div>
     </div>
