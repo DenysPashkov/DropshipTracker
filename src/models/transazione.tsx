@@ -37,6 +37,16 @@ export class CardProps {
     this.vendita = vendita;
   }
 
+  clone(): CardProps {
+    const acquisto = new Transazione(this.acquisto.prezzo, this.acquisto.data);
+    let vendita: Transazione | null = null;
+    if (this.vendita) {
+      vendita = new Transazione(this.vendita.prezzo, this.vendita.data);
+    }
+
+    return new CardProps(this.id, this.name, acquisto, vendita);
+  }
+
   static fromJSON(json: any): CardProps {
     return new CardProps(
       json.id,
