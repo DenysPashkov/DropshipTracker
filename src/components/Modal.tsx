@@ -1,8 +1,10 @@
+import { createPortal } from "react-dom";
+
 type ModalProps = {
   onClose: () => void;
-  onSave?: () => void; // opzionale
-  children?: React.ReactNode; // contenuto generico dentro la modale
-  saveLabel?: string; // testo bottone salva personalizzabile
+  onSave?: () => void;
+  children?: React.ReactNode;
+  saveLabel?: string;
 };
 
 export function Modal({
@@ -11,8 +13,8 @@ export function Modal({
   children,
   saveLabel = "Salva",
 }: ModalProps) {
-  return (
-    <div className="fixed inset-0 backdrop-blur bg-opacity-50 flex justify-center items-center z-50">
+  return createPortal(
+    <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-[9999]">
       <div className="bg-white p-6 rounded-xl shadow-xl max-w-md w-full relative">
         <div className="mt-4 text-right">{children}</div>
 
@@ -35,6 +37,7 @@ export function Modal({
           )}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
