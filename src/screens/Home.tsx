@@ -8,6 +8,7 @@ export function Home() {
       {/* pt-10 to offset the fixed header height */}
       <Header />
       <HomeBody />
+      <FloatingButton />
     </div>
   );
 }

@@ -2,24 +2,16 @@ import { useState } from "react";
 import { Modal } from "./Modal";
 import { CardProps, Transazione } from "../models/transazione";
 import { useFirestore } from "../models/firestoreSettings";
-import { firestoreManager } from "../models/FirestoreManager";
 
-export function FloatingButton({
-  setCard,
-}: {
-  setCard: React.Dispatch<React.SetStateAction<CardProps[]>>;
-}) {
+export function FloatingButton() {
   const [isOpen, setIsOpen] = useState(false);
 
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
 
-  const { db } = useFirestore();
+  const { addCardProps } = useFirestore();
 
   const handleSave = (cardPropData: Partial<CardProps>) => {
-    if (!db) {
-      return;
-    }
     if (
       !cardPropData.name?.trim() &&
       (!cardPropData.acquisto || cardPropData.acquisto.prezzo === 0)
@@ -34,11 +26,7 @@ export function FloatingButton({
       ...cardPropData,
       id: newId, // inject new ID directly
     });
-
-    firestoreManager.addCardProp(db, constructedCard, (cardProp) => {
-      setCard((prev) => [...prev, cardProp]);
-    });
-
+    addCardProps(constructedCard);
     closeModal();
   };
 
@@ -156,7 +144,7 @@ function FloatingButtonModal({
               Data acquisto
             </label>
             <input
-              name="acquisto.date"
+              name="acquisto.data"
               type="date"
               value={cardProp.acquisto.data.toISOString().split("T")[0]}
               onChange={handleChange}
@@ -171,11 +159,11 @@ function FloatingButtonModal({
               onChange={(e) => {
                 setShowVendita(e.target.checked);
                 if (!e.target.checked) {
-                  const newCardProp = cardProp.clone();
+                  const newCardProp = structuredClone(cardProp);
                   newCardProp.vendita = null;
                   setCardProp(newCardProp);
                 } else {
-                  const newCardProp = cardProp.clone();
+                  const newCardProp = structuredClone(cardProp);
                   newCardProp.vendita = new Transazione(0, new Date());
                   setCardProp(newCardProp);
                 }
@@ -204,7 +192,7 @@ function FloatingButtonModal({
                   Data vendita
                 </label>
                 <input
-                  name="vendita.date"
+                  name="vendita.data"
                   type="date"
                   value={
                     cardProp.vendita?.data

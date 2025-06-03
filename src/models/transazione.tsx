@@ -11,10 +11,10 @@ export class Transazione {
     return new Transazione(json.prezzo, new Date(json.data));
   }
 
-  toJSON() {
+  static toJSON(transazione: Transazione): any {
     return {
-      prezzo: this.prezzo,
-      data: this.data.toISOString(),
+      prezzo: transazione.prezzo,
+      data: transazione.data.toISOString(),
     };
   }
 }
@@ -56,12 +56,12 @@ export class CardProps {
     );
   }
 
-  toJSON() {
+  static toJSON(card: CardProps): any {
     return {
-      id: this.id,
-      name: this.name,
-      acquisto: this.acquisto.toJSON(),
-      vendita: this.vendita ? this.vendita.toJSON() : null,
+      id: card.id,
+      name: card.name,
+      acquisto: Transazione.toJSON(card.acquisto),
+      vendita: card.vendita ? Transazione.toJSON(card.vendita) : null,
     };
   }
 }

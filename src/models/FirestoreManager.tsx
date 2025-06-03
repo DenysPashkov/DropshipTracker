@@ -69,10 +69,16 @@ export class firestoreManager {
         return;
       }
 
-      // Rebuild array with updated card
-      const updatedArray = data.CardProps.map((card: any) => {
-        return card.id === updatedCard.id ? updatedCard.toJSON() : card;
-      });
+      const existingCards = data.CardProps.map((card: any) =>
+        CardProps.fromJSON(card)
+      );
+
+      // Then map to update
+      const updatedArray = existingCards.map((card) =>
+        card.id === updatedCard.id
+          ? CardProps.toJSON(updatedCard)
+          : CardProps.toJSON(card)
+      );
 
       await updateDoc(docRef, { CardProps: updatedArray });
 
@@ -114,7 +120,7 @@ export class firestoreManager {
     const docRef = doc(db, "DropshipTracker", "7uvKnCSAq58tnRWjc9BN");
 
     updateDoc(docRef, {
-      CardProps: arrayUnion(newCardProp.toJSON()),
+      CardProps: arrayUnion(CardProps.toJSON(newCardProp)),
     })
       .then(() => {
         setCardProp(newCardProp);
