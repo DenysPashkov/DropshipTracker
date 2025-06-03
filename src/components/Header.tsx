@@ -4,6 +4,7 @@ import { useFirestore } from "../models/firestoreSettings";
 import { getApp, getApps, initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import type { CardProps } from "../models/transazione";
+import { Modal } from "./Modal";
 
 export function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -181,44 +182,26 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <div
-      onClick={onClose}
-      className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur"
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="bg-white rounded-lg p-6 shadow-lg w-[400px] space-y-4"
-      >
-        <h2 className="text-lg font-semibold">Firebase Config</h2>
+    <Modal onClose={onClose} onSave={handleSubmit} saveLabel="Salva">
+      <h2 className="text-lg font-semibold mb-4 text-center">
+        Firebase Config
+      </h2>
 
-        {Object.keys(formData).map((key) => (
-          <div key={key} className="flex flex-col">
-            <label className="text-sm capitalize">{key}</label>
-            <input
-              type="text"
-              name={key}
-              value={formData[key as keyof typeof formData]}
-              onChange={handleChange}
-              className="border px-2 py-1 rounded"
-            />
-          </div>
-        ))}
-
-        <div className="flex justify-end gap-2 pt-4">
-          <button
-            onClick={onClose}
-            className="px-4 py-1 bg-gray-300 rounded hover:bg-gray-400"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            Save
-          </button>
+      {Object.keys(formData).map((key) => (
+        <div key={key} className="flex flex-col mb-3">
+          <label className="text-sm text-left capitalize" htmlFor={key}>
+            {key}
+          </label>
+          <input
+            id={key}
+            type="text"
+            name={key}
+            value={formData[key as keyof typeof formData]}
+            onChange={handleChange}
+            className="border px-2 py-1 rounded"
+          />
         </div>
-      </div>
-    </div>
+      ))}
+    </Modal>
   );
 }
