@@ -57,20 +57,29 @@ function EarningHeaderSection() {
     return [totalAcquisto, totalVendita, totalVendita - totalAcquisto];
   }
 
+  function formatEuro(value: number): string {
+    return new Intl.NumberFormat("it-IT", {
+      style: "currency",
+      currency: "EUR",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    }).format(value);
+  }
+
   return (
     <>
       <p className="text-sm font-medium hover:underline cursor-pointer">
-        {statistic[2]}
+        {formatEuro(statistic[2])}
       </p>
 
       <div className="absolute top-8 right-0 bg-white shadow-lg rounded p-3 w-40 text-sm z-10 opacity-0 group-hover:opacity-100 group-hover:translate-y-0 transform -translate-y-2 transition-all duration-200 pointer-events-none group-hover:pointer-events-auto">
         <div className="flex justify-between mb-1">
           <span className="text-gray-500">Spese:</span>
-          <span>{statistic[0]}</span>
+          <span>{formatEuro(statistic[0])}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-500">Vendita:</span>
-          <span>{statistic[1]}</span>
+          <span>{formatEuro(statistic[1])}</span>
         </div>
       </div>
     </>
@@ -86,6 +95,7 @@ function ThemeHeaderSection() {
   const toggleTheme = () => {
     setTheme(theme === "dark" ? "light" : "dark");
   };
+
   return (
     <>
       {mounted && (
@@ -146,11 +156,9 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
     let app;
 
     if (!getApps().length) {
-      // No Firebase app initialized yet
       app = initializeApp(formData);
     } else {
       try {
-        // Reuse the existing default app
         app = getApp();
       } catch (error) {
         console.error("Failed to get Firebase app:", error);
@@ -177,7 +185,6 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
 
     localStorage.setItem("firebaseConfig", JSON.stringify(formData));
     setFormData(formData);
-
     onClose();
   };
 
