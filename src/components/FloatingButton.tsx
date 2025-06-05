@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Modal } from "./Modal";
 import { CardProps, Transazione } from "../models/transazione";
-import { useFirestore } from "../models/firestoreSettings";
+import { useServer } from "../models/ServerSettings";
 
 export function FloatingButton() {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,7 +9,7 @@ export function FloatingButton() {
   const openModal = () => setIsOpen(true);
   const closeModal = () => setIsOpen(false);
 
-  const { addCardProps } = useFirestore();
+  const { addCardProps } = useServer();
 
   const handleSave = (cardPropData: Partial<CardProps>) => {
     if (

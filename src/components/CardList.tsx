@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Card } from "./Card";
 import { Modal } from "./Modal";
 import { CardProps, Transazione } from "../models/transazione";
-import { useFirestore } from "../models/firestoreSettings";
+import { useServer } from "../models/ServerSettings";
 
 export function CardList({ cardProps }: { cardProps: CardProps[] }) {
   const [selectedCard, setSelectedCard] = useState<CardProps | null>(null);
@@ -42,7 +42,7 @@ function CardListModal({
   selectedCard: CardProps;
   setSelectedCard: (card: CardProps | null) => void;
 }) {
-  const { updateCardProps } = useFirestore();
+  const { updateCardProps } = useServer();
   const [showVendita, setShowVendita] = useState<boolean>(false);
 
   useEffect(() => {
