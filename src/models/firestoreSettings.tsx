@@ -1,5 +1,5 @@
 // FirestoreContext.tsx
-import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
+import { getApp, getApps, initializeApp } from "firebase/app";
 import { Firestore, getFirestore } from "firebase/firestore";
 import React, { createContext, useContext, useState, useEffect } from "react";
 
