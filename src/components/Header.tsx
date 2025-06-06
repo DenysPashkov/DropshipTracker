@@ -5,6 +5,9 @@ import { getApp, getApps, initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
 import type { CardProps } from "../models/transazione";
 import { Modal } from "./Modal";
+import logoBrain from "../assets/GiDeV-logo.png";
+import logo from "../assets/GiDeV-logo2.png";
+
 
 export function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -12,11 +15,10 @@ export function Header() {
   return (
     <>
       <header className="fixed top-0 left-0 right-0 h-14 bg-blue-300 flex items-center justify-between px-6 shadow-md z-50">
-        <img
-          src="/logo.png"
-          alt="Company Logo"
-          className="h-8 w-auto object-contain bg-gray-200 rounded"
-        />
+        <div className="flex items-center gap-2">
+          <img src={logoBrain} alt="Company Logo" className="h-8 w-auto" />
+          <img src={logo} alt="Partner Logo" className="h-6 w-auto" />
+        </div>
 
         <nav className="relative flex items-center gap-6">
           <div className="relative group">
