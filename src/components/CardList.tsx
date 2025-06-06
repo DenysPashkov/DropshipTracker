@@ -120,7 +120,12 @@ function CardListModal({
           </label>
           <input
             type="date"
-            value={selectedCard.acquisto.data.toISOString().split("T")[0]}
+            value={
+              selectedCard.acquisto?.data instanceof Date &&
+              !isNaN(selectedCard.acquisto.data.getTime())
+                ? selectedCard.acquisto.data.toISOString().split("T")[0]
+                : ""
+            }            
             onChange={(e) =>
               handleChange(["acquisto", "data"], new Date(e.target.value))
             }
@@ -164,12 +169,11 @@ function CardListModal({
               <input
                 type="date"
                 value={
-                  selectedCard.vendita?.data
-                    ? new Date(selectedCard.vendita.data)
-                        .toISOString()
-                        .split("T")[0]
+                  selectedCard.vendita?.data instanceof Date &&
+                  !isNaN(new Date(selectedCard.vendita.data).getTime())
+                    ? new Date(selectedCard.vendita.data).toISOString().split("T")[0]
                     : ""
-                }
+                }                
                 onChange={(e) =>
                   handleChange(["vendita", "data"], new Date(e.target.value))
                 }
