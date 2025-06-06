@@ -56,8 +56,13 @@ function CardListModal({
   const handleSave = () => {
     if (!selectedCard) return;
 
-    // save the selected card properties
-    updateCardProps(selectedCard);
+    const updatedCard = CardProps.fromJSON(selectedCard);
+
+    if (!showVendita) {
+      updatedCard.vendita = null;
+    }
+
+    updateCardProps(updatedCard);
     handleClose();
   };
 
@@ -125,7 +130,7 @@ function CardListModal({
               !isNaN(selectedCard.acquisto.data.getTime())
                 ? selectedCard.acquisto.data.toISOString().split("T")[0]
                 : ""
-            }            
+            }
             onChange={(e) =>
               handleChange(["acquisto", "data"], new Date(e.target.value))
             }
@@ -171,9 +176,11 @@ function CardListModal({
                 value={
                   selectedCard.vendita?.data instanceof Date &&
                   !isNaN(new Date(selectedCard.vendita.data).getTime())
-                    ? new Date(selectedCard.vendita.data).toISOString().split("T")[0]
+                    ? new Date(selectedCard.vendita.data)
+                        .toISOString()
+                        .split("T")[0]
                     : ""
-                }                
+                }
                 onChange={(e) =>
                   handleChange(["vendita", "data"], new Date(e.target.value))
                 }
