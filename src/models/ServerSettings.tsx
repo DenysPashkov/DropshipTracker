@@ -57,9 +57,10 @@ export const ServerProvider = ({ children }: { children: React.ReactNode }) => {
   // Load serverURL from localStorage only once on mount
   useEffect(() => {
     const saved = localStorage.getItem("serverURL");
+    console.log("@@@@ ", saved);
     if (saved) {
       const parsed = JSON.parse(saved);
-      setServerURL(parsed.serverURL);
+      setServerURL(parsed.url);
     }
   }, []);
 
