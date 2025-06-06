@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { useFirestore } from "../models/firestoreSettings.tsx";
 import { CardList } from "./CardList.tsx";
 import { CardProps } from "../models/transazione";
+import { useServer } from "../models/ServerSettings.tsx";
 
 type FilterParams = {
   name: string;
@@ -11,7 +11,7 @@ type FilterParams = {
 };
 
 export function HomeBody() {
-  const { cardProps } = useFirestore();
+  const { cardProps } = useServer();
 
   // Default filters (show all)
   const [filters, setFilters] = useState<FilterParams>({

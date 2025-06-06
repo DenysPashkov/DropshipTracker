@@ -1,9 +1,7 @@
 import { Sun, Moon, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
-import { useFirestore } from "../models/firestoreSettings";
-import { getApp, getApps, initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import type { CardProps } from "../models/transazione";
+import { useServer } from "../models/ServerSettings";
+import { CardProps } from "../models/transazione";
 import { Modal } from "./Modal";
 import logoBrain from "../assets/GiDeV-logo.png";
 import logo from "../assets/GiDeV-logo2.png";
@@ -36,7 +34,7 @@ export function Header() {
 }
 
 function EarningHeaderSection() {
-  const { cardProps } = useFirestore();
+  const { cardProps } = useServer();
   const [statistic, setStatistic] = useState<[number, number, number]>([
     0, 0, 0,
   ]);
@@ -121,31 +119,20 @@ function SettingHeaderSection({ onClick }: { onClick: () => void }) {
   );
 }
 
-type FirestoreSettings = {
-  apiKey: string;
-  authDomain: string;
-  projectId: string;
-  storageBucket: string;
-  messagingSenderId: string;
-  appId: string;
+type ServerSettings = {
+  url: string;
 };
 
 function SettingsModal({ onClose }: { onClose: () => void }) {
-  const { setDb } = useFirestore();
+  const { setServerURL } = useServer();
 
-  const formDefaultValues: FirestoreSettings = {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: "",
+  const formDefaultValues: ServerSettings = {
+    url: "",
   };
-  const [formData, setFormData] =
-    useState<FirestoreSettings>(formDefaultValues);
+  const [formData, setFormData] = useState<ServerSettings>(formDefaultValues);
 
   useEffect(() => {
-    const saved = localStorage.getItem("firebaseConfig");
+    const saved = localStorage.getItem("serverURL");
     if (saved) {
       setFormData(JSON.parse(saved));
     }
@@ -155,21 +142,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
     const hasValidSettings = Object.values(formData).every((val) => val !== "");
     if (!hasValidSettings) return;
 
-    let app;
-
-    if (!getApps().length) {
-      app = initializeApp(formData);
-    } else {
-      try {
-        app = getApp();
-      } catch (error) {
-        console.error("Failed to get Firebase app:", error);
-        return;
-      }
-    }
-
-    const db = getFirestore(app);
-    setDb(db);
+    setServerURL(formData.url);
   }, [formData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -185,7 +158,7 @@ function SettingsModal({ onClose }: { onClose: () => void }) {
       return;
     }
 
-    localStorage.setItem("firebaseConfig", JSON.stringify(formData));
+    localStorage.setItem("serverURL", JSON.stringify(formData));
     setFormData(formData);
     onClose();
   };
