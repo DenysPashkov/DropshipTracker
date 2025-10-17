@@ -5,6 +5,7 @@ type ModalProps = {
   onSave?: () => void;
   children?: React.ReactNode;
   saveLabel?: string;
+  theme?: "light" | "dark";
 };
 
 export function Modal({
@@ -12,10 +13,15 @@ export function Modal({
   onSave,
   children,
   saveLabel = "Salva",
+  theme = "light",
 }: ModalProps) {
   return createPortal(
     <div className="fixed inset-0 bg-opacity-50 backdrop-blur-sm flex justify-center items-center z-[9999]">
-      <div className="bg-white p-6 rounded-xl shadow-xl max-w-md w-full relative">
+      <div
+        className={`p-6 rounded-xl shadow-xl max-w-md w-full relative
+          ${theme === "dark" ? "bg-gray-900 text-gray-100" : "bg-white text-gray-900"}
+        `}
+      >
         <div className="mt-4 text-right">{children}</div>
 
         <div className="mt-6 flex justify-center gap-6">

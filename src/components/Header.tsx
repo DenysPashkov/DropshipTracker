@@ -1,14 +1,49 @@
 import { Sun, Moon, Settings } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useServer } from "../models/ServerSettings";
-import { CardProps } from "../models/transazione";
 import { Modal } from "./Modal";
 import logoBrain from "../assets/GiDeV-logo.png";
 import logo from "../assets/GiDeV-logo2.png";
-
+import { HomeBody } from "./HomeBody"; // Assicurati di importare HomeBody
 
 export function Header() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark" || savedTheme === "light") {
+      setTheme(savedTheme);
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    } else {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setTheme(prefersDark ? "dark" : "light");
+      if (prefersDark) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  };
+
+  if (!mounted) return null;
 
   return (
     <>
@@ -23,15 +58,29 @@ export function Header() {
             <EarningHeaderSection />
           </div>
 
-          <ThemeHeaderSection />
+          <button onClick={toggleTheme} className="p-2 hover:bg-blue-200 rounded">
+            {theme === "dark" ? (
+              <Sun className="w-5 h-5 text-yellow-300" />
+            ) : (
+              <Moon className="w-5 h-5 text-gray-900" />
+            )}
+          </button>
+
           <SettingHeaderSection onClick={() => setIsModalOpen(true)} />
         </nav>
       </header>
+
+      <main className={`pt-16 min-h-screen ${theme === "dark" ? "bg-gray-900" : "bg-white"}`}>
+        <HomeBody theme={theme} />
+      </main>
 
       {isModalOpen && <SettingsModal onClose={() => setIsModalOpen(false)} />}
     </>
   );
 }
+
+// EarningHeaderSection, SettingHeaderSection, SettingsModal restano come li avevi già scritti
+
 
 function EarningHeaderSection() {
   const { cardProps } = useServer();
@@ -87,29 +136,56 @@ function EarningHeaderSection() {
 }
 
 function ThemeHeaderSection() {
-  const [theme, setTheme] = useState("light");
+  const [theme, setTheme] = useState<"light" | "dark">("light");
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    setMounted(true);
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "dark" || savedTheme === "light") {
+      setTheme(savedTheme);
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    } else {
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setTheme(prefersDark ? "dark" : "light");
+      if (prefersDark) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    }
+  }, []);
 
   const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   };
 
+  if (!mounted) return null;
+
   return (
-    <>
-      {mounted && (
-        <button onClick={toggleTheme} className="p-2 hover:bg-blue-200 rounded">
-          {theme === "dark" ? (
-            <Sun className="w-5 h-5 text-yellow-300" />
-          ) : (
-            <Moon className="w-5 h-5 text-gray-900" />
-          )}
-        </button>
+    <button onClick={toggleTheme} className="p-2 hover:bg-blue-200 rounded">
+      {theme === "dark" ? (
+        <Sun className="w-5 h-5 text-yellow-300" />
+      ) : (
+        <Moon className="w-5 h-5 text-gray-900" />
       )}
-    </>
+    </button>
   );
 }
+
+
+
 
 function SettingHeaderSection({ onClick }: { onClick: () => void }) {
   return (
