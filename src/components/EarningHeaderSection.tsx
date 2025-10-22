@@ -3,7 +3,7 @@ import { useServer } from "../models/ServerSettings";
 
 type CardProps = {
   acquisto: { prezzo: number };
-  vendita?: { prezzo: number };
+  vendita?: { prezzo: number } | null;
 };
 
 export default function EarningHeaderSection() {
