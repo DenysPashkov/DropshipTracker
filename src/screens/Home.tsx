@@ -8,7 +8,7 @@ export function Home() {
     <div className="flex flex-col min-h-screen pt-14 space-y-30">
       <Header />
       <main className="flex-grow">
-        <HomeBody />
+        <HomeBody theme="light"/>
         <FloatingButton />
       </main>
       <Footer />
