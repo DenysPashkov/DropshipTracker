@@ -4,10 +4,9 @@ import { Header } from "../components/Header";
 
 export function Home() {
   return (
-    <div className="flex flex-col min-h-screen pt-14 space-y-30">
+    <div className="flex flex-col min-h-screen pt-14">
       <Header />
       <main className="flex-grow">
-
         <FloatingButton />
       </main>
       <Footer />
